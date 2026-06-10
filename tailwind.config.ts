@@ -17,8 +17,12 @@ const config: Config = {
         mint: "rgb(var(--mint) / <alpha-value>)"
       },
       boxShadow: {
-        panel: "0 24px 70px rgba(18, 25, 38, 0.14)",
-        button: "0 12px 24px rgba(239, 83, 80, 0.24)"
+        panel: "0 28px 90px rgba(0, 0, 0, 0.38), 0 0 60px rgba(214, 178, 94, 0.07)",
+        button: "0 12px 28px rgba(171, 32, 49, 0.34)"
+      },
+      fontFamily: {
+        display: ["Playfair Display", "Georgia", "serif"],
+        sans: ["Inter", "Arial", "Helvetica", "sans-serif"]
       },
       keyframes: {
         pop: {
@@ -26,8 +30,8 @@ const config: Config = {
           "100%": { transform: "scale(1)", opacity: "1" }
         },
         pulseRing: {
-          "0%, 100%": { boxShadow: "0 0 0 0 rgba(255, 109, 86, .36)" },
-          "50%": { boxShadow: "0 0 0 12px rgba(255, 109, 86, 0)" }
+          "0%, 100%": { boxShadow: "0 0 0 0 rgba(214, 178, 94, .36)" },
+          "50%": { boxShadow: "0 0 0 12px rgba(214, 178, 94, 0)" }
         }
       },
       animation: {

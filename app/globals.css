@@ -5,10 +5,10 @@
 :root {
   --ink: 28 31 42;
   --paper: 255 248 237;
-  --studio: 248 241 230;
-  --accent: 36 117 255;
-  --coral: 255 109 86;
-  --mint: 32 190 158;
+  --studio: 13 7 16;
+  --accent: 212 175 55;
+  --coral: 196 30 58;
+  --mint: 23 149 132;
 }
 
 * {
@@ -23,11 +23,13 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.78), transparent 40%),
-    radial-gradient(circle at 18% 18%, rgba(32, 190, 158, 0.16), transparent 34%),
-    linear-gradient(160deg, #fff8ed 0%, #f7efe2 44%, #f5fbff 100%);
+    linear-gradient(90deg, rgba(214, 178, 94, 0.08) 0 1px, transparent 1px 120px),
+    linear-gradient(120deg, rgba(171, 32, 49, 0.3), transparent 38%),
+    linear-gradient(180deg, #080507 0%, #16080c 42%, #2a0d12 100%);
   color: rgb(var(--ink));
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
 }
 
 button,
@@ -40,8 +42,32 @@ button:focus-visible,
 select:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid rgba(36, 117, 255, 0.55);
+  outline: 3px solid rgba(214, 178, 94, 0.55);
   outline-offset: 3px;
+}
+
+.premiere-display {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+}
+
+@keyframes marqueeScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes cinemaCountdown {
+  0% {
+    box-shadow: 0 0 0 0 rgba(214, 178, 94, 0.4), 0 0 40px rgba(214, 178, 94, 0.2);
+    transform: scale(0.96);
+  }
+  100% {
+    box-shadow: 0 0 0 18px rgba(214, 178, 94, 0), 0 0 40px rgba(214, 178, 94, 0.2);
+    transform: scale(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

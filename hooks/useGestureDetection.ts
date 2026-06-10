@@ -43,20 +43,7 @@ interface GestureOptions {
 
 const fingerTips = [8, 12, 16, 20];
 const fingerPips = [6, 10, 14, 18];
-const swipeMinDistance = 0.18;
-const swipeMaxVerticalDrift = 0.16;
-const swipeWindowMs = 900;
-const swipeCooldownMs = 1200;
-const movingHandThreshold = 0.035;
 const palmHoldMs = 650;
-const peaceHoldMs = 220;
-
-interface SwipeTracker {
-  cooldownUntil: number;
-  startTime: number;
-  startX: number;
-  startY: number;
-}
 
 interface PoseTracker {
   candidate: GestureName;
@@ -74,52 +61,12 @@ function mirrorLandmarks(points: Keypoint[]) {
   return points.map((point) => ({ ...point, x: 1 - point.x }));
 }
 
-function detectSwipe(points: Keypoint[], tracker: SwipeTracker): GestureName {
-  const wrist = points[0];
-  if (!wrist) return "none";
-
-  const now = Date.now();
-  if (now < tracker.cooldownUntil) return "none";
-
-  const elapsed = now - tracker.startTime;
-  if (!tracker.startTime || elapsed > swipeWindowMs) {
-    tracker.startTime = now;
-    tracker.startX = wrist.x;
-    tracker.startY = wrist.y;
-    return "none";
-  }
-
-  const deltaX = wrist.x - tracker.startX;
-  const deltaY = Math.abs(wrist.y - tracker.startY);
-
-  if (Math.abs(deltaX) >= swipeMinDistance && deltaY <= swipeMaxVerticalDrift) {
-    tracker.cooldownUntil = now + swipeCooldownMs;
-    tracker.startTime = now;
-    tracker.startX = wrist.x;
-    tracker.startY = wrist.y;
-    return deltaX > 0 ? "swipe_right" : "swipe_left";
-  }
-
-  return "none";
+function classifyPalmGesture(points: Keypoint[]): GestureName {
+  const extendedFingers = fingerTips.map((_, index) => isFingerExtended(points, index)).filter(Boolean).length;
+  return extendedFingers >= 4 ? "open_palm" : "none";
 }
 
-function getWristMotion(points: Keypoint[], tracker: SwipeTracker) {
-  const wrist = points[0];
-  if (!wrist || !tracker.startTime) return 0;
-  return Math.hypot(wrist.x - tracker.startX, wrist.y - tracker.startY);
-}
-
-function classifyPoseGesture(points: Keypoint[]): GestureName {
-  const extended = fingerTips.map((_, index) => isFingerExtended(points, index));
-  const extendedCount = extended.filter(Boolean).length;
-
-  if (extended[0] && extended[1] && !extended[2] && !extended[3]) return "peace";
-  if (extendedCount >= 4) return "open_palm";
-
-  return "none";
-}
-
-function filterPoseGesture(pose: GestureName, poseTracker: PoseTracker, moving: boolean) {
+function filterStableGesture(pose: GestureName, poseTracker: PoseTracker) {
   const now = Date.now();
 
   if (pose !== poseTracker.candidate) {
@@ -128,11 +75,7 @@ function filterPoseGesture(pose: GestureName, poseTracker: PoseTracker, moving: 
     return "none";
   }
 
-  if (pose === "open_palm" && (moving || now - poseTracker.since < palmHoldMs)) {
-    return "none";
-  }
-
-  if (pose === "peace" && now - poseTracker.since < peaceHoldMs) {
+  if (now - poseTracker.since < palmHoldMs) {
     return "none";
   }
 
@@ -146,12 +89,6 @@ export function useGestureDetection(videoRef: RefObject<HTMLVideoElement>, optio
   const handsRef = useRef<MediaPipeHandsInstance | null>(null);
   const rafRef = useRef<number>();
   const lastGestureRef = useRef<{ name: GestureName; time: number }>({ name: "none", time: 0 });
-  const swipeTrackerRef = useRef<SwipeTracker>({
-    cooldownUntil: 0,
-    startTime: 0,
-    startX: 0,
-    startY: 0
-  });
   const poseTrackerRef = useRef<PoseTracker>({
     candidate: "none",
     since: 0
@@ -230,18 +167,12 @@ export function useGestureDetection(videoRef: RefObject<HTMLVideoElement>, optio
         });
 
         hands.onResults((results) => {
-          const rawPoints = results.multiHandLandmarks?.[0];
-          if (rawPoints?.length) {
-            const points = mirrorLandmarks(rawPoints);
-            const swipeGesture = detectSwipe(points, swipeTrackerRef.current);
-            const moving = getWristMotion(points, swipeTrackerRef.current) > movingHandThreshold;
-            const poseGesture = classifyPoseGesture(points);
-            const nextGesture =
-              swipeGesture === "none" ? filterPoseGesture(poseGesture, poseTrackerRef.current, moving) : swipeGesture;
+          const points = results.multiHandLandmarks?.[0] ? mirrorLandmarks(results.multiHandLandmarks[0]) : undefined;
+          if (points?.length) {
+            const nextGesture = filterStableGesture(classifyPalmGesture(points), poseTrackerRef.current);
             setGesture(nextGesture);
             emitGesture(nextGesture);
           } else {
-            swipeTrackerRef.current.startTime = 0;
             poseTrackerRef.current = { candidate: "none", since: 0 };
             setGesture("none");
           }
@@ -254,7 +185,7 @@ export function useGestureDetection(videoRef: RefObject<HTMLVideoElement>, optio
 
         handsRef.current = hands;
         setStatus("ready");
-        setMessage("Show an open palm, peace sign, or swipe near the camera.");
+        setMessage("Hold an open palm to start countdown. Use manual controls for filters.");
 
         const tick = async () => {
           const video = videoRef.current;

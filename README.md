@@ -1,16 +1,18 @@
 # Interactive Camera Photobooth
 
-A production-ready browser photobooth built with Next.js, React, TypeScript, Tailwind CSS, Canvas, webcam capture, and TensorFlow hand tracking.
+A production-ready browser photobooth built with Next.js, React, TypeScript, Tailwind CSS, Canvas, webcam capture, and MediaPipe Hands tracking.
 
 ## Features
 
 - Webcam permission flow, live preview, camera switching, countdown capture, retake/clear controls
 - Browser-only image processing; no backend or uploaded photos
-- TensorFlow hand tracking with graceful manual fallback
-- Gestures: open palm starts countdown, peace sign captures, swipe left/right cycles filters
+- MediaPipe Hands tracking with graceful manual fallback
+- Gestures: hold an open palm to start the countdown
+- Live camera preview shows the active filter before capture
 - Canvas editor with square, portrait, story, landscape, A4, and classic strip sizes
 - Collage layouts: 2-photo strip, 3-photo strip, 4-photo grid, 6-photo collage
-- Frames, background swatches, stickers, captions, grayscale, sepia, brightness, contrast, and vintage filters
+- Manual exposure, contrast, saturation, warmth, fade, and vignette edits
+- Custom frame borders, draggable stickers, captions, grayscale, sepia, brightness, contrast, and vintage filters
 - PNG and JPG export
 
 ## Getting Started

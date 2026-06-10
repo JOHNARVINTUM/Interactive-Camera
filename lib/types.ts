@@ -4,9 +4,9 @@ export type CollageLayoutId = "strip2" | "strip3" | "grid4" | "collage6";
 
 export type FilterId = "none" | "grayscale" | "sepia" | "bright" | "contrast" | "vintage";
 
-export type GestureName = "open_palm" | "peace" | "swipe_left" | "swipe_right" | "none";
+export type GestureName = "open_palm" | "none";
 
-export type FrameId = "clean" | "instant" | "dashed" | "neon";
+export type FrameId = "clean" | "instant" | "classic" | "dashed" | "neon";
 
 export type StickerId = "none" | "sparkles" | "hearts" | "stars" | "smile";
 
@@ -30,13 +30,26 @@ export interface CollageLayout {
   description: string;
 }
 
+export interface ImageAdjustments {
+  exposure: number;
+  contrast: number;
+  saturation: number;
+  warmth: number;
+  fade: number;
+  vignette: number;
+}
+
 export interface EditorSettings {
   canvasSize: CanvasSizeId;
   layout: CollageLayoutId;
   filter: FilterId;
+  adjustments: ImageAdjustments;
   frame: FrameId;
   background: string;
+  borderColor: string;
   sticker: StickerId;
+  stickerX: number;
+  stickerY: number;
   text: string;
 }
 
@@ -68,6 +81,7 @@ export const FILTER_LABELS: Record<FilterId, string> = {
 export const FRAME_LABELS: Record<FrameId, string> = {
   clean: "Clean",
   instant: "Instant",
+  classic: "Classic",
   dashed: "Dashed",
   neon: "Neon"
 };

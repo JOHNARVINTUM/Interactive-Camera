@@ -13,10 +13,10 @@ export function ExportButton({
   return (
     <div className="flex flex-wrap gap-2">
       <ToolButton disabled={disabled} icon={<Download className="h-4 w-4" aria-hidden />} onClick={() => onExport("png")} variant="primary">
-        PNG
+        Export PNG
       </ToolButton>
       <ToolButton disabled={disabled} icon={<Download className="h-4 w-4" aria-hidden />} onClick={() => onExport("jpeg")}>
-        JPG
+        Export JPG
       </ToolButton>
     </div>
   );
